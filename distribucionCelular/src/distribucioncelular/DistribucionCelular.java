@@ -35,51 +35,21 @@ public class DistribucionCelular{
     };
 };
 class Antenna{
-    private int antenna[]=new int[2],
-                big[]=new int[2];
-    private boolean biggest;
-    private Antenna next;
+    int antenna[]=new int[2],
+        big[]=new int[2];
+    boolean biggest;
+    Antenna next;
     
     public Antenna(){
-        this.biggest=false;
-        this.antenna[0]=this.big[0]=0;
-        this.antenna[1]=this.big[1]=1;
-        this.next=null;
-    };
+        biggest=false;
+        antenna[0]=this.big[0]=0;
+        antenna[1]=this.big[1]=1;
+        next=null;
+    }
     public Antenna(int heigth){
         this();
-        setHeigth(heigth);  
-    };
-    public void setBiggest(boolean is){
-        this.biggest=is;
-    };
-    public boolean biggest(){
-        return this.biggest;
-    };
-    public int heigth(){
-        return this.antenna[0];
-    };
-    public void setHeigth(int heigth){
-        this.antenna[0]=heigth;
-    };
-    public int signal(){
-        return this.antenna[1];
-    };
-    public void setSignal(int signal){
-        this.antenna[1]+=signal;
-    };
-    public int big(int box){
-        return this.big[box];
-    };
-    public void setBig(int box,int value){
-        this.big[box]=value;
-    };
-    public void setNext(Antenna next){
-        this.next=next;
-    };
-    public Antenna next(){
-        return this.next;
-    };
+        antenna[0]=heigth;  
+    }
 };
 
 class Pile{
@@ -87,49 +57,49 @@ class Pile{
                     end;
     private int size;
     public Pile(){
-        this.top=null;
-        this.size=0;
+        top=null;
+        size=0;
     };
     public int push(int heigth){
         Antenna next=new Antenna(heigth);
-        next.setNext(this.top);
+        next.next=top;
         this.top=next;
         signal();
-        this.size++;
-        return top.signal();
+        size++;
+        return top.antenna[1];
     };
     public void pull(){
-        this.top=this.top.next();
-        this.size--;
+        top=top.next;
+        size--;
     };
     public void hReset(){
-        this.top=null;
-        this.size=0;
+        top=null;
+        size=0;
         System.gc();
     };
     public void signal(){
-        Antenna A=this.top.next();
-        for(int i=0;i<this.size;i++){
-            if(A.biggest()){
-                if(this.top.heigth()>=A.heigth()){
-                    this.top.setSignal(A.signal());
-                    this.top.setBiggest(true);
-                    this.top.setBig(0,A.heigth());
-                    this.top.setBig(1,A.signal());
+        Antenna A=top.next;
+        for(int i=0;i<size;i++){
+            if(A.biggest){
+                if(top.antenna[0]>=A.antenna[0]){
+                    top.antenna[1]+=A.antenna[1];
+                    top.biggest=true;
+                    top.big[0]=A.big[0];
+                    top.big[1]=A.big[1];
                 }else{
                 };
-                i=this.size;
-            }else if(this.top.heigth()>=A.heigth()){
-                A=A.next();
-                this.top.setSignal(1);
-            }else if(this.top.heigth()>=A.big(0)){
-                this.top.setSignal(A.big(1)-1);
-                this.top.setBig(0,A.big(0));
-                this.top.setBig(1,A.big(1));
-                i=this.size;
+                i=size;
+            }else if(top.antenna[0]>=A.antenna[0]){
+                A=A.next;
+                top.antenna[1]++;
+            }else if(top.antenna[0]>=A.big[0]){
+                top.antenna[1]+=A.big[1]-1;
+                top.big[0]=A.big[0];
+                top.big[1]=A.big[1];
+                i=size;
             }else{
-                A=A.next();
-                this.top.setSignal(1);
+                A=A.next;
+                top.antenna[1]++;
             };            
         };
     };
