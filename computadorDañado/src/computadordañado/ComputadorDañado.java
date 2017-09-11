@@ -1,6 +1,7 @@
 package computadordañado;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 /**
  *
  * @author ElJoho
@@ -9,84 +10,85 @@ public class ComputadorDañado{
     public static void main(String[] args)throws Exception{
         BufferedReader buffer=new BufferedReader(new InputStreamReader(System.in));
         Fixer fixer;
-        String line=buffer.readLine();
-        boolean stop=false;
-        for(int i=0;i<100&&stop==false;i++){
+        Scanner inp=new Scanner(System.in);
+        //String line=buffer.readLine();
+        StringBuilder line;
+        for(int i=0;i<100&&buffer.readLine().toString().trim().length()!=0;i++){
+            line=new StringBuilder(buffer.readLine());
             if(line.length()<=100000){
                 fixer=new Fixer(line);
                 line=fixer.fixed();
                 System.out.println(line);  
-            };
-            stop=isEmptyString(line);
-            line=buffer.readLine();
+            }else{};
+            line=new StringBuilder(buffer.readLine());
         };
-    };
-    static boolean isEmptyString(String str) {
-        if(str==null)return true;
-        if(str.length()==0)return true;
-        if(str.trim().length()==0)return true;
-        for(int n=0;n<str.length();n++) 
-            if(!Character.isSpace(str.charAt(n)))return false;
-        return true;
-    };    
+    };   
 };
 class Fixer{
     private char line[];
-    private String begin;
-    private String end;
-    private String fixed;
+    //private String  temporal,
+                    //fixed;
+    private StringBuilder   temporall,
+                            fixedd;
     public Fixer(){
-        this.begin="";
-        this.end="";
-        this.fixed="";
+        //this.temporal="";
+        //this.fixed="";
+        this.fixedd=new StringBuilder();
+        this.temporall=new StringBuilder();
     };
-    public Fixer(String line){
+    public Fixer(StringBuilder line){
         this();
         this.line=new char[line.length()];
-        this.line=line.toCharArray();
+        this.line=line.toString().toCharArray();
         fixing();
     };
     public void fixing(){
         for(int i=0;i<this.line.length;){
             if(i==0&&this.line[i]!='$'&&this.line[i]!='#'){
-                fixed+=this.line[i];
+                //this.fixed+=this.line[i];
+                this.fixedd.append(this.line[i]);
                 i++;
             }else if(this.line[i]=='#'){
                 i++;
                 if(i<this.line.length){
                     while(this.line[i]!='#'&&this.line[i]!='$'&&this.line[i]!=0){
-                        this.begin+=this.line[i];
-                        //System.out.print("i: "+i);
+                        //this.temporal+=this.line[i];
+                        this.temporall.append(this.line[i]);
                         i++;
                         if(i>=this.line.length){
-                            //System.out.print(" yep ");
                             break;
                         };
                     };
                 };
-                this.begin+=this.fixed;
-                this.fixed=this.begin;
-                this.begin="";
-                //System.out.println(" ."+this.fixed);
+                //this.temporal+=this.fixed;
+                this.temporall.append(this.fixedd);
+                //this.fixed=this.temporal;
+                this.fixedd=this.temporall;
+                //this.temporal="";
+                this.temporall=new StringBuilder();
             }else if(this.line[i]=='$'){
                 i++;
                 if(i<this.line.length){
                     while(this.line[i]!='#'&&this.line[i]!='$'&&this.line[i]!=0){
-                        this.end+=this.line[i];
+                        //this.temporal+=this.line[i];
+                        this.temporall.append(this.line[i]);
                         i++;
                         if(i>=this.line.length)
                             break;
                     };
                 };
-                this.fixed+=this.end;
-                this.end="";
+                //this.fixed+=this.temporal;
+                this.fixedd.append(this.temporall);
+                //this.temporal="";
+                this.temporall=new StringBuilder();
             }else{
-                this.fixed+=this.line[i];
+                //this.fixed+=this.line[i];
+                this.fixedd.append(this.line[i]);
                 i++;
             };            
         };
     };
-    public String fixed(){
-        return this.fixed;
+    public StringBuilder fixed(){
+        return this.fixedd;
     };
 };
