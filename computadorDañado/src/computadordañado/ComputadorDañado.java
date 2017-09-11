@@ -1,7 +1,6 @@
 package computadordañado;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 /**
  *
  * @author ElJoho
@@ -10,17 +9,14 @@ public class ComputadorDañado{
     public static void main(String[] args)throws Exception{
         BufferedReader buffer=new BufferedReader(new InputStreamReader(System.in));
         Fixer fixer;
-        Scanner inp=new Scanner(System.in);
-        //String line=buffer.readLine();
-        StringBuilder line;
-        for(int i=0;i<100&&buffer.readLine().toString().trim().length()!=0;i++){
-            line=new StringBuilder(buffer.readLine());
+        String line=buffer.readLine();
+        for(int i=0;i<100&&line!=null&&line.length()!=0&&line.trim().length()!=0;i++){
             if(line.length()<=100000){
                 fixer=new Fixer(line);
-                line=fixer.fixed();
+                line=fixer.fixed().toString();
                 System.out.println(line);  
             }else{};
-            line=new StringBuilder(buffer.readLine());
+            line=buffer.readLine();
         };
     };   
 };
@@ -36,10 +32,10 @@ class Fixer{
         this.fixedd=new StringBuilder();
         this.temporall=new StringBuilder();
     };
-    public Fixer(StringBuilder line){
+    public Fixer(String line){
         this();
         this.line=new char[line.length()];
-        this.line=line.toString().toCharArray();
+        this.line=line.toCharArray();
         fixing();
     };
     public void fixing(){
