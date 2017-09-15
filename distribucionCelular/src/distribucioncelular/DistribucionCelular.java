@@ -1,12 +1,13 @@
 package distribucioncelular;
+import static java.lang.System.gc;
 import java.util.Scanner;
 /**
  *
  * @author ElJoho
  */
 public class DistribucionCelular{
+    private static Scanner inp=new Scanner(System.in);
     public static void main(String[] args)throws Exception{
-        Scanner inp=new Scanner(System.in);
         byte T=(byte)inp.nextInt();
         int n;
         int H;
@@ -15,7 +16,6 @@ public class DistribucionCelular{
             for(int i=0;i<T;i++){
                 n=inp.nextInt();
                 if(n>=2&&n<=1000000){
-                    antennas=new Pile(n);
                     for(int i1=0;i1<n;i1++){
                        H=inp.nextInt();
                        if(H>=1&&H<=100000000)
@@ -26,7 +26,7 @@ public class DistribucionCelular{
                     System.out.println("");
                 }else{
                 };
-                antennas.clear();
+                antennas.hReset();
                 n=0;
                 H=0;
             };
@@ -34,63 +34,73 @@ public class DistribucionCelular{
         };
     };
 };
+class Antenna{
+    int antenna[]=new int[2],
+        big[]=new int[2];
+    boolean biggest;
+    Antenna next;
+    
+    public Antenna(){
+        this.biggest=false;
+        this.antenna[0]=this.big[0]=0;
+        this.antenna[1]=this.big[1]=1;
+        this.next=null;
+    }
+    public Antenna(int heigth){
+        this();
+        this.antenna[0]=heigth;  
+    }
+};
 
 class Pile{
-    private int antennas[][][];
-    private int buzy;
+    private Antenna top,
+                    end;
+    private int size;
     public Pile(){
-        this.buzy=0;
-    };
-    public Pile(int antennas){
-        this();
-        this.antennas=new int[2][3][antennas];
+        this.top=null;
+        this.size=0;
     };
     public int push(int heigth){
-        this.antennas[0][0][this.buzy]=heigth;
-        this.antennas[0][1][this.buzy]++;
-        this.antennas[1][0][this.buzy]=this.antennas[1][0][this.buzy]=0;//Altura del ultimo grande
-        this.antennas[1][1][this.buzy]=this.antennas[1][1][this.buzy]=1;
+        Antenna next=new Antenna(heigth);
+        next.next=this.top;
+        this.top=next;
         signal();
-        this.buzy++;
-        return this.antennas[0][1][this.buzy-1];
+        this.size++;
+        return this.top.antenna[1];
+    };
+    public void pull(){
+        this.top=top.next;
+        this.size--;
+    };
+    public void hReset(){
+        this.top=null;
+        this.size=0;
+        System.gc();
     };
     public void signal(){
-        //System.out.println("Buzy: "+this.buzy);
-        if(this.buzy==0){
-            this.antennas[0][2][0]=1;//Biggest
-            //System.out.print("6. ");   
-        }else{
-            for(int i=this.buzy;i>0;i--){
-                if(this.antennas[0][2][i-1]==1){//¿el anterior es el mayor de todos?
-                    if(this.antennas[0][0][this.buzy]>=this.antennas[0][0][i-1]){
-                        this.antennas[0][1][this.buzy]+=this.antennas[0][1][i-1];//Señal
-                        this.antennas[0][2][this.buzy]=1;//Biggest
-                        this.antennas[1][0][this.buzy]=this.antennas[1][0][i-1];//Altura del ultimo grande
-                        this.antennas[1][1][this.buzy]=this.antennas[1][1][i-1];//Señal del ultimo grande
-                        //System.out.println("1. ");
-                    }else{
-                        //System.out.println("2. ");
-                    };
-                    i=-1;
-                }else if(this.antennas[0][0][this.buzy]>=this.antennas[0][0][i-1]){//Anterior no es el mayor de todos,es mayor que el anterior?
-                    this.antennas[0][1][this.buzy]++;
-                    //System.out.print("3. ");
-                }else if(this.antennas[0][0][this.buzy]>=this.antennas[1][0][i-1]){
-                    this.antennas[0][1][this.buzy]+=this.antennas[1][1][i-1]-1;//Señal
-                    this.antennas[1][0][this.buzy]=this.antennas[1][0][i-1];//Altura del ultimo grande
-                    this.antennas[1][1][this.buzy]=this.antennas[1][1][i-1];//Señal del ultimo grande
-                    i=-1;
-                    //System.out.print("4. ");
+        Antenna A=this.top.next;
+        for(int i=0;i<this.size;i++){
+            if(A.biggest){
+                if(this.top.antenna[0]>=A.antenna[0]){
+                    this.top.antenna[1]+=A.antenna[1];
+                    this.top.biggest=true;
+                    this.top.big[0]=A.big[0];
+                    this.top.big[1]=A.big[1];
                 }else{
-                    this.antennas[0][1][this.buzy]++;
-                    //System.out.print("5. ");
-                }; 
-            };
+                };
+                i=this.size;
+            }else if(this.top.antenna[0]>=A.antenna[0]){
+                A=A.next;
+                this.top.antenna[1]++;
+            }else if(this.top.antenna[0]>=A.big[0]){
+                this.top.antenna[1]+=A.big[1]-1;
+                this.top.big[0]=A.big[0];
+                this.top.big[1]=A.big[1];
+                i=size;
+            }else{
+                A=A.next;
+                this.top.antenna[1]++;
+            };            
         };
-    };
-    public void clear(){
-        this.antennas=new int[1][1][1];
-        this.antennas[0][0][0]=0;
-        this.buzy=0;
     };
 };
